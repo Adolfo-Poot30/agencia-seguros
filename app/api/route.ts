@@ -11,12 +11,13 @@ const controller = new TrafficController(pool);
 
 export async function GET() {
   try {
-    const [accidentes, horas, topMunicipio, topPersona, general] = await Promise.all([
+    const [accidentes, horas, topMunicipio, topPersona, general, infracciones] = await Promise.all([
       controller.getAccidentesPorVehiculo(),
       controller.getHorasPicoAccidentes(),
       controller.getMunicipioMasAccidentado(),
       controller.getPersonaMayorSiniestralidad(),
       controller.getConsultaGeneralDetallada(),
+      controller.getInfraccionesPorPersona(),
     ]);
 
     return NextResponse.json({
@@ -26,7 +27,8 @@ export async function GET() {
         horasPico: horas,
         municipioLider: topMunicipio,
         personaMayorRiesgo: topPersona,
-        reporteGeneral: general
+        reporteGeneral: general,
+	infracciones: infracciones
       }
     });
   } catch (error) {

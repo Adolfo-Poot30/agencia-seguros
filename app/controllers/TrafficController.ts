@@ -5,6 +5,11 @@ interface AccidentesVehiculo { placa: string; total_accidentes: number; }
 interface HoraPico { hora: number; total: number; }
 interface MunicipioTop { nombre: string; total_accidentes: number; }
 interface PersonaAccidentes { nombre: string; apellido: string; total_accidentes: number; }
+interface PersonaInfracciones {
+  nombre: string;
+  apellido: string;
+  total_infracciones: number;
+}
 interface ConsultaGeneral {
   nombre: string;
   apellido: string;
@@ -89,4 +94,20 @@ export class TrafficController {
     const res = await this.pool.query(query);
     return res.rows;
   }
+
+async getInfraccionesPorPersona(): Promise<PersonaInfracciones[]> {
+  const query = `
+    SELECT 
+        p.nombre, 
+        p.apellido, 
+        COUNT(i.id) AS total_infracciones
+    FROM personas p
+    LEFT JOIN vehiculos v ON p.id = v.persona_id
+    LEFT JOIN infracciones i ON v.id = i.vehiculo_id
+    GROUP BY p.id, p.nombre, p.apellido
+    ORDER BY total_infracciones DESC;
+  `;
+  const res = await this.pool.query(query);
+  return res.rows;
+}
 }
